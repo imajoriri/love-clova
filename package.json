@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "test": "./dist/test/test.js"
-  }
+    "test": "./dist/test/clova-test.js"
+  },
   "author": "",
   "license": "ISC"
 }
