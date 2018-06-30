@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 var fs = require('fs');
 
 //ファイルの書き込み関数
@@ -11,43 +9,22 @@ function writeFile(path, data) {
   });
 }
 
-//使用例
-writeFile("index.js", initIndex());
+var createFileName = "index.js";
 
-function initIndex(){
-  var result = `
+// require
+var req = `
 var clova = require("love-clova");
+`
 
-const LaunchRequestHandler = {
-  canHandle: function(handlerInput){
-    return handlerInput.requestEnvelope.isMatch("LaunchRequest");
-  },
-  handle: function(handlerInput){
-    var msg = "LauchRequestの時に呼ばれます";
-    return handlerInput.responseBuilder.speak(msg).reprompt(msg).getResponse();
-  }
-}
+// handler
+var handlersList = ["LaunchRequest", "Clova.GuideIntent"]
+var error = "error"
+var handlers = handlersList.map( (intent) => {
+  return handlerCreater(intent);
+});
+var exports = exportsCreater(handlersList, error);
 
-const GuideIntentHandler = {
-  canHandle: function(handlerInput){
-    return handlerInput.requestEnvelope.isMatch("Clova.GuideIntent");
-  },
-  handle: async function(handlerInput){
-    var msg = "ヘルプとかって言われた時にこのスキルを説明するインテント"
-    return handlerInput.responseBuilder.speak(msg).reprompt(msg).getResponse();
-  }
-}
-
-const testIntentHandler = {
-  canHandle: function(handlerInput){
-    return handlerInput.requestEnvelope.isMatch("testIntent");
-  },
-  handle: async function(handlerInput){
-    var msg = "testIntentが呼ばれた時に発動";
-    return handlerInput.responseBuilder.speak(msg).getResponse();
-  }
-}
-
+const errorHandler = `
 const errorHandler = {
   canHandle: function(handlerInput){
     return true;
@@ -57,13 +34,44 @@ const errorHandler = {
     return handlerInput.responseBuilder.speak(msg).reprompt(msg).getResponse();
   }
 }
-
-exports.handler = clova.extensionBuilders.addRequestHandlers(
-  LaunchRequestHandler,
-  GuideIntentHandler,
-  testIntentHandler) 
-  .addErrorHandlers(errorHandler)
-  .lambda();
 `
-  return result;
+
+var indexFile = req + handlers + errorHandler + exports;
+
+writeFile(createFileName, indexFile);
+
+// log
+console.log(`create ${createFileName} file`);
+                                   
+
+// functions
+function handlerCreater(intent){
+  var text = `
+const ${intent}Handler = {
+  canHandle: function(handlerInput){
+    return handlerInput.requestEnvelope.isMatch(${"'" + intent + "'"});
+  },
+  handle: function(handlerInput){
+    var msg = "";
+    return handlerInput.responseBuilder.speak(msg).reprompt(msg).getResponse();
+  }
 }
+`
+  return text;
+}
+
+function exportsCreater(intents, error){
+  var RequestHandlers = intents.map( (intent) => {
+    return `${intent}Handler`;
+  }).join(",");
+  var errorHandler = `${error}Handler`;
+  return `
+exports.handler = clova.extensionBuilders
+  .addRequestHandlers(${RequestHandlers})
+  .addErrorHandlers(${errorHandler})
+  .lambda()
+`
+  return RequestHandlers;
+}
+
+
