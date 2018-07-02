@@ -19,13 +19,13 @@ class RequestEnvelope{
     }
     return intents.some(check);
   }
-  getSlot(slotsKey){
-    if(this.request.intent.slots !== null && this.request.intent.slots[slotsKey]){
-      var slots = this.request.intent.slots[slotsKey].value;
-      return slots;
-    }else{
-      throw new Error("not defined slotsKey: " + slotsKey);
+  getSlot(){
+    var inputSlots = this.request.intent.slots;
+    var outputSlots = {};
+    for(var slot in inputSlots){
+      outputSlots[slot] = inputSlots[slot].value;
     }
+    return outputSlots;
   }
 }
 
