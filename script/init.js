@@ -17,11 +17,12 @@ var clova = require("love-clova");
 `
 
 // handler
-var handlersList = ["LaunchRequest", "Clova.GuideIntent"]
+var handlersList = ["LaunchRequest", "Clova.GuideIntent", "sampleIntent"]
 var error = "error"
 var handlers = handlersList.map( (intent) => {
+  intent = intent.replace(".", ""); // ビルトインインテントに"."があるので排除
   return handlerCreater(intent);
-});
+}).join("");
 var exports = exportsCreater(handlersList, error);
 
 const errorHandler = `
@@ -62,6 +63,7 @@ const ${intent}Handler = {
 
 function exportsCreater(intents, error){
   var RequestHandlers = intents.map( (intent) => {
+    intent = intent.replace(".", ""); // ビルトインインテントに"."があるので排除
     return `${intent}Handler`;
   }).join(",");
   var errorHandler = `${error}Handler`;
