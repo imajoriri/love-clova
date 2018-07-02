@@ -49,6 +49,10 @@ var output = (event, data) => {
 }
 
 lambda(event).then( data => {
+  if(data === undefined){
+    console.log("null");
+    return "";
+  }
   const str = input(event, data) + output(event, data);
   console.log(str);
   console.log(JSON.stringify(data));
