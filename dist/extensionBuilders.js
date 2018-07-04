@@ -55,6 +55,7 @@ class ExtensionBulders{
 
     this.responseBuilder.response.outputSpeech.values = []; // lambdaの再利用により前実行の影響を受けないため
     this.responseBuilder.response.reprompt.outputSpeech.values = [];  // lambdaの再利用により前実行の影響を受けないため
+    this.responseBuilder.response.shouldEndSession = true;  // lambdaの再利用により前実行の影響を受けないため
 
     if(executionHandler){
       try{

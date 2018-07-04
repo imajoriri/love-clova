@@ -1,11 +1,5 @@
 #! /usr/bin/env node
 
-const rootDir = require("app-root-path").toString();
-var lambda = require(`${rootDir}/index.js`).handler;
-var argPath = process.argv[2];
-var eventJSONPath = `${rootDir}/${argPath}`;
-var event = require(eventJSONPath);
-
 var input = (event, data) => {
   var requestType = event.request.type;
   if(requestType === "IntentRequest"){
@@ -48,6 +42,16 @@ var output = (event, data) => {
   return result;
 }
 
+const rootDir = require("app-root-path").toString();
+var lambda = require(`${rootDir}/index.js`).handler;
+var argPath = process.argv[2];
+var eventJSONPath = `${rootDir}/${argPath}`;
+var event = require(eventJSONPath);
+
+if(argPath === undefined){
+  console.log("json file not specify");
+  return "";
+}
 lambda(event).then( data => {
   if(data === undefined){
     console.log("null");
