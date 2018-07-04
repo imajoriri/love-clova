@@ -6,7 +6,7 @@ var clova = require("love-clova");
 `
 
 // handler
-var handlersList = ["LaunchRequest", "Clova.GuideIntent", "sampleIntent"]
+var handlersList = ["LaunchRequest", "SessionEndedRequest", "Clova.GuideIntent", "sampleIntent"]
 var error = "error"
 var handlers = handlersList.map( (intent) => {
   intent = intent.replace(".", ""); // ビルトインインテントに"."があるので排除
