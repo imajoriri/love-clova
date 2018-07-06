@@ -68,10 +68,14 @@ class ExtensionBulders{
         errorResponseJSON.sessionAttributes = this.sessionAttributeManager.sessionAttributes;
         return errorResponseJSON;
       }
+
+      // sessionAttributeのセット
       responseJSON.sessionAttributes = this.sessionAttributeManager.sessionAttributes;
+
       if(this.dynamoManager.tableName !== undefined){
         await this.dynamoManager.dynamoCreate();
       }
+
       return responseJSON;
     }
   }
