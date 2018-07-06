@@ -9,7 +9,6 @@ var clova = require("love-clova");
 var handlersList = ["LaunchRequest", "SessionEndedRequest", "Clova.GuideIntent", "sampleIntent"]
 var error = "error"
 var handlers = handlersList.map( (intent) => {
-  intent = intent.replace(".", ""); // ビルトインインテントに"."があるので排除
   return handlerCreater(intent);
 }).join("");
 var exports = exportsCreater(handlersList, error);
@@ -38,8 +37,9 @@ module.exports.createFileName = createFileName;
 
 // ------functions------
 function handlerCreater(intent){
+  var intentObject = intent.replace(".", ""); // ビルトインインテントに"."があるので排除
   var text = `
-const ${intent}Handler = {
+const ${intentObject}Handler = {
   canHandle: function(handlerInput){
     return handlerInput.requestEnvelope.isMatch(${"'" + intent + "'"});
   },
