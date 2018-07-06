@@ -96,6 +96,13 @@ exports.handler = clova.extensionBuilders.addRequestHandlers(
   sampleIntentHandler) // 後で定義するhandlerを登録
   .addErrorHandlers(errorHandler)
   .lambda();
+
+//or
+
+exports.handler = async function(event, content){
+  clova.extensionBuilders.add....
+  return clova.extensionBuilders.invoke(event);
+};
 ```
 
 # slots
