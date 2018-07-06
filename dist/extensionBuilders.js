@@ -43,9 +43,10 @@ class ExtensionBulders{
 
   lambda(){
     var that = this;
-    return async function(event, context){
-      return that.invoke(event);
-    };
+    return (event) => this.invoke(event);
+    //return async function(event, context){
+    //  return that.invoke(event);
+    //};
   }
 
   async invoke(event){
