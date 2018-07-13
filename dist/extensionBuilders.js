@@ -3,6 +3,8 @@ var responseBuilder         = require("./responseBuilder.js");
 var sessionAttributeManager = require('./sessionAttributeManager.js');
 var dynamoManager           = require("./dynamoManager.js");
 
+var verifier                = require('./util/verifier.js');
+
 //var ExtensionBulders = function(){
 class ExtensionBulders{
   constructor(){
@@ -15,7 +17,15 @@ class ExtensionBulders{
     // handler
     this.handlers = []; 
     this.errorHandlers = [];
+
+    // ExtensionId(applicationId)
+    this.extensionId;
+    // extensionidやsignatureを判断するかどうか
+    this.isCheckRequest = false;
   }
+  // TODO 
+  // extensionIDをセットするメソッド。
+  // どこかのタイミングでverifier関数
 
   setEventBoforeDoHandler(event){
     this.requestEnvelope.version = event.version;
@@ -25,6 +35,15 @@ class ExtensionBulders{
 
     this.sessionAttributeManager.sessionAttributes = event.session.sessionAttributes;
     this.dynamoManager.userId = event.session.user.userId;
+  }
+
+  setExtensionId(extensionId){
+    this.extensionId = extensionId;
+    return this;
+  }
+  checkRequest(bool){
+    this.isCheckRequest = bool;
+    return this;
   }
 
   addRequestHandlers(){
@@ -57,6 +76,17 @@ class ExtensionBulders{
     this.responseBuilder.response.outputSpeech.values = []; // lambdaの再利用により前実行の影響を受けないため
     this.responseBuilder.response.reprompt.outputSpeech.values = [];  // lambdaの再利用により前実行の影響を受けないため
     this.responseBuilder.response.shouldEndSession = true;  // lambdaの再利用により前実行の影響を受けないため
+
+    // signature, extensionid, bodyを検証
+    if(this.isCheckRequest){
+      try{
+        var signature = event.headers.signaturecek;
+        verifier(signature, this.extensionId, this.requestEnvelope);
+      }catch(e){
+        console.log(e);
+        return e;
+      }
+    }
 
     if(executionHandler){
       try{

@@ -15,6 +15,7 @@
   "dependencies": {
     "app-root-path": "^2.1.0",
     "aws-sdk": "^2.266.1",
+    "crypto": "^1.0.1",
     "fs": "0.0.1-security"
   }
 }
