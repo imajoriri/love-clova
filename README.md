@@ -1,4 +1,10 @@
-# README.md
+# 注意
+
+公式ではありません。
+
+# GITHUB
+
+https://github.com/imajoriri/love-clova/wiki
 
 # skd読み込み
 
@@ -108,8 +114,10 @@ exports.handler = async function(event, content){
 # slots
 
 ```js
-handlerInput.requestEnvelope.request.intent.slots["slotsKey"].value;
-handlerInput.requestEnvelope.getSlot("key");
+var value = handlerInput.requestEnvelope.request.intent.slots.key.value;
+// or
+var slots = handlerInput.requestEnvelope.getSlot();
+var value = slots.key;
 ```
 
 # sessionAttributeManager
