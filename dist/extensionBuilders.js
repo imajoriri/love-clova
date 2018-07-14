@@ -1,7 +1,6 @@
 var requestEnvelope         = require("./requestEnvelope.js");
 var responseBuilder         = require("./responseBuilder.js");
 var sessionAttributeManager = require('./sessionAttributeManager.js');
-var dynamoManager           = require("./dynamoManager.js");
 
 var verifier                = require('./util/verifier.js');
 
@@ -12,7 +11,6 @@ class ExtensionBulders{
     this.requestEnvelope         = requestEnvelope;
     this.responseBuilder         = responseBuilder;
     this.sessionAttributeManager = sessionAttributeManager;
-    this.dynamoManager           = dynamoManager;
 
     // handler
     this.handlers = []; 
@@ -23,9 +21,6 @@ class ExtensionBulders{
     // extensionidやsignatureを判断するかどうか
     this.isCheckRequest = false;
   }
-  // TODO 
-  // extensionIDをセットするメソッド。
-  // どこかのタイミングでverifier関数
 
   setEventBoforeDoHandler(event){
     this.requestEnvelope.version = event.version;
@@ -33,8 +28,8 @@ class ExtensionBulders{
     this.requestEnvelope.context = event.context;
     this.requestEnvelope.request = event.request;
 
+    // sessionAttributesManagerにリクエスト出来たセッションを保存
     this.sessionAttributeManager.sessionAttributes = event.session.sessionAttributes;
-    this.dynamoManager.userId = event.session.user.userId;
   }
 
   setExtensionId(extensionId){
@@ -55,22 +50,14 @@ class ExtensionBulders{
     return this;
   }
 
-  setDynamoTableName(tableName){
-    this.dynamoManager.tableName = tableName;
-    return this;
-  }
-
   lambda(){
     var that = this;
     return (event) => this.invoke(event);
-    //return async function(event, context){
-    //  return that.invoke(event);
-    //};
   }
 
   async invoke(event){
     this.setEventBoforeDoHandler(event);
-    var executionHandler = this.getExecutionHandler(); // 実行するハンドラを一個だけ
+    var executionHandler = this.getExecutionHandler(); // 実行するハンドラを一個だけ取得
     var executionErrorHandler = this.getExecutionErrorHandler(); // 実行するエラーハンドラを一個だけ
 
     this.responseBuilder.response.outputSpeech.values = []; // lambdaの再利用により前実行の影響を受けないため
@@ -102,33 +89,11 @@ class ExtensionBulders{
       // sessionAttributeのセット
       responseJSON.sessionAttributes = this.sessionAttributeManager.sessionAttributes;
 
-      if(this.dynamoManager.tableName !== undefined){
-        await this.dynamoManager.dynamoCreate();
-      }
-
       return responseJSON;
     }
   }
 
-  //invoke: function(event){
-  //  this.setEventBoforeDoHandler(event);
-  //  var executionHandler = this.getExecutionHandler();
-
-  //  if(executionHandler){
-  //    return new Promise( (resolve, reject) => {
-  //      var responseJSON = executionHandler.handle(this);
-  //      responseJSON.sessionAttributes = this.sessionAttributeManager.sessionAttributes;
-  //      if(this.dynamoManager.tableName === undefined){
-  //        resolve(responseJSON);
-  //      }else{
-  //        this.dynamoManager.dynamoCreate().then( data => {
-  //          resolve(responseJSON);
-  //        });
-  //      }
-  //    });
-  //  }
-  //},
-
+  // canhandleが真のもの全てをexecutionhandlerに入れて行く
   getExecutionHandler(){
     var executionHandler;
     for(var i in this.handlers){
@@ -139,6 +104,8 @@ class ExtensionBulders{
     }
     return executionHandler;
   }
+
+  // canhandleが真のもの全てをexecutionErrorHandlerに入れて行く
   getExecutionErrorHandler(){
     var executionErrorHandler;
     for(var i in this.errorHandlers){
