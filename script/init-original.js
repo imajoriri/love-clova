@@ -14,6 +14,7 @@ function writeFile(path, data) {
 // handlersディレクトリを作成
 try{
   fs.mkdirSync('handlers');
+  console.log('mkdir handlers');
 }catch(e){
 }
 
@@ -26,6 +27,7 @@ intents.forEach( (intent, index) => {
   var fileName = `handlers/${handler}.js`;
   var text = handlerCreater(handler, intent);
   writeFile(fileName, text);
+  console.log(`created ${fileName}`);
 });
 
 // ErrorHandler
@@ -41,6 +43,7 @@ exports.ErrorHandler = {
 }
 `
 writeFile('handlers/ErrorHandler.js', ErrorHandlerText);
+console.log('created handlers/ErrorHandler.js')
 
 
 
@@ -81,6 +84,7 @@ indexText += `
 };
 `
 writeFile("index.js", indexText);
+console.log('created index.js');
 
 
 

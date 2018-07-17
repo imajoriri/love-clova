@@ -1,6 +1,6 @@
 {
   "name": "love-clova",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -8,7 +8,8 @@
   },
   "bin": {
     "clova-test": "./dist/test/clova-test.js",
-    "clova-init": "./script/init.js"
+    "clova-init": "./script/init.js",
+    "init-original": "./script/init-original.js"
   },
   "author": "",
   "license": "ISC",
